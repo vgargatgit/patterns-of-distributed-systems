@@ -68,10 +68,15 @@ Common levels (SQL / traditional DB world):
   May see uncommitted writes (dirty reads).
 
 - **Read Committed**  
-  Sees only committed data, but repeated reads may see different values (non-repeatable read).
+  Transactions sees only committed data, but repeated reads may see different values (non-repeatable read). T1 reads x twice, first read gets x=0. Between first read and second T2 commits x=1. T1 reads x=1 second time. 
 
 - **Repeatable Read**  
   Same row read twice in a transaction returns the same value (but phantoms may appear).
+  So in this case T1 reads x=0 both the times even if T2 commited x=1 between two reads. 
+  But phantom reads are still possible in many implementations:
+  T1 runs `SELECT * FROM accounts WHERE balance > 100`.
+  T2 inserts a new row with `balance = 200` and commits.
+  T1 repeats the same query and now sees an extra row (a “phantom”), even though individual rows it saw earlier haven’t changed.
 
 - **Serializable**  
   Behavior is as if transactions ran one at a time, in some serial order.
